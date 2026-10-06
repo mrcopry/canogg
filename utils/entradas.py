@@ -1,14 +1,9 @@
-import os
+"""Utilidades para solicitar y validar entradas del usuario."""
 
+import getpass
 
-def limpiar_pantalla() -> None:
-    """Limpia la terminal según el sistema operativo utilizado."""
-    os.system("cls" if os.name == "nt" else "clear")
-
-
-def pausar_pantalla() -> None:
-    """Detiene la ejecución del programa hasta que el usuario presiona Enter."""
-    input("\nPresione [ENTER] para continuar...")
+MODO_PVE = 1
+MODO_PVP = 2
 
 
 def solicitar_entero_validado(
@@ -43,9 +38,25 @@ def solicitar_opcion_texto_validada(
         )
 
 
+def solicitar_opcion_oculta(
+    mensaje_solicitud: str, opciones_permitidas: list[str]
+) -> str:
+    """Solicita una opción sin mostrarla en pantalla (útil en PvP local)."""
+    entrada_usuario = getpass.getpass(mensaje_solicitud).strip().lower()
+    while entrada_usuario not in opciones_permitidas:
+        print("Opción inválida.")
+        entrada_usuario = getpass.getpass(mensaje_solicitud).strip().lower()
+    return entrada_usuario
+
+
+def solicitar_nombre(mensaje_solicitud: str, nombre_por_defecto: str) -> str:
+    """Solicita un nombre y usa uno por defecto si se deja vacío."""
+    return input(mensaje_solicitud).strip() or nombre_por_defecto
+
+
 def seleccionar_modo_juego() -> int:
     """Muestra y valida el menú para seleccionar la modalidad de juego (PvE o PvP)."""
     print("\n--- Seleccione el Modo de Juego ---")
     print("1. Jugador vs Entorno (PvE)")
     print("2. Jugador vs Jugador (PvP)")
-    return solicitar_entero_validado("Opción: ", 1, 2)
+    return solicitar_entero_validado("Opción: ", MODO_PVE, MODO_PVP)
